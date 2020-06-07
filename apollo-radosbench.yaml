@@ -1,0 +1,33 @@
+cluster:
+  head: "apollo.qa.suse.cz"
+  clients: ["callisto.qa.suse.cz"]
+  osds: ["ares.qa.suse.cz", "artemis.qa.suse.cz", "hera.qa.suse.cz", "demeter.qa.suse.cz"]
+  mons: ["ares.qa.suse.cz", "artemis.qa.suse.cz", "hera.qa.suse.cz", "demeter.qa.suse.cz", "apollo.qa.suse.cz"]
+  osds_per_node: 5
+  fs: xfs
+  mkfs_opts: -f -i size=2048
+  mount_opts: -o inode64,noatime,logbsize=256k
+  conf_file: /etc/ceph/ceph.conf
+  ceph.conf: /etc/ceph/ceph.conf
+  iterations: 3
+  rebuild_every_test: False
+  tmp_dir: "/tmp/cbt"
+  rados_cmd: "sudo /usr/bin/rados"
+  ceph_cmd: "sudo /usr/bin/ceph"
+  rbd_cmd: "sudo /usr/bin/rbd"
+  ceph_fsid: "e340c3c4-a71f-11ea-8bc2-0cc47a7ce2c8"
+  pool_profiles:
+    replicated:
+      pg_size: 1024
+      pgp_size: 1024
+      replication: 'replicated'
+benchmarks:
+  radosbench:
+    op_size: [ 4194304, 524288, 4096 ]
+    osd_ra: [ 512, 4096 ]
+    write_only: False
+    time: 300
+    concurrent_ops: [ 128 ]
+    concurrent_procs: 1
+    use_existing: True
+    pool_profile: replicated

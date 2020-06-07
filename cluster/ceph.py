@@ -11,7 +11,6 @@ import json
 
 from .cluster import Cluster
 
-
 logger = logging.getLogger("cbt")
 
 def sshtarget(user, host):
@@ -96,6 +95,7 @@ class Ceph(Cluster):
         self.ceph_authtool_cmd = config.get('ceph-authtool_cmd', '/usr/bin/ceph-authtool')
         self.radosgw_admin_cmd = config.get('radosgw-admin_cmd', '/usr/bin/radosgw-admin')
         self.ceph_cmd = config.get('ceph_cmd', '/usr/bin/ceph')
+        self.ceph_fsid = config.get('ceph_fsid', '')
         self.ceph_fuse_cmd = config.get('ceph-fuse_cmd', '/usr/bin/ceph-fuse')
         self.rados_cmd = config.get('rados_cmd', '/usr/bin/rados')
         self.rbd_cmd = config.get('rbd_cmd', '/usr/bin/rbd')
@@ -608,13 +608,14 @@ class Ceph(Cluster):
             time.sleep(1)
 
     def dump_config(self, run_dir):
-        common.pdsh(settings.getnodes('osds'), 'sudo %s -c %s --admin-daemon /var/run/ceph/ceph-osd.0.asok config show > %s/ceph_settings.out' % (self.ceph_cmd, self.tmp_conf, run_dir)).communicate()
+        common.pdsh(settings.getnodes('osds'), 'sudo %s -c %s --admin-daemon /var/run/ceph/%s/ceph-osd.0.asok config show 2>/dev/null > %s/ceph_settings.out' % (self.ceph_cmd, self.tmp_conf, self.ceph_fsid, run_dir)).communicate()
 
     def dump_historic_ops(self, run_dir):
-        common.pdsh(settings.getnodes('osds'), 'find "/var/run/ceph/ceph-osd*.asok" -maxdepth 1 -exec sudo %s --admin-daemon {} dump_historic_ops \; > %s/historic_ops.out' % (self.ceph_cmd, run_dir)).communicate()
+        common.pdsh(settings.getnodes('osds'), 'sudo find /var/run/ceph/%s/ -name ceph-osd.\*.asok -maxdepth 1 -exec sudo %s --admin-daemon {} dump_historic_ops \; > %s/historic_ops.out' % (self.ceph_fsid, self.ceph_cmd, run_dir)).communicate()
 
     def set_osd_param(self, param, value):
-        common.pdsh(settings.getnodes('osds'), 'find /dev/disk/by-partlabel/osd-device-*data -exec readlink {} \; | cut -d"/" -f 3 | sed "s/[0-9]$//" | xargs -I{} sudo sh -c "echo %s > /sys/block/\'{}\'/queue/%s"' % (value, param))
+        #common.pdsh(settings.getnodes('osds'), 'find /dev/disk/by-partlabel/osd-device-*data -exec readlink {} \; | cut -d"/" -f 3 | sed "s/[0-9]$//" | xargs -I{} sudo sh -c "echo %s > /sys/block/\'{}\'/queue/%s"' % (value, param))
+        common.pdsh(settings.getnodes('osds'), 'sudo pvdisplay | awk \'/\/dev\/sd/{print $3}\' | cut -d"/" -f 3 | sed "s/[0-9]$//" | xargs -I{} sudo sh -c "echo %s > /sys/block/\'{}\'/queue/%s"' % (value, param))
 
 
     def __str__(self):
