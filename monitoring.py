@@ -38,7 +38,8 @@ class CollectlMonitoring(Monitoring):
         common.pdsh(self.nodes, ['collectl', self.args.format(collectl_dir=collectl_dir)])
 
     def stop(self, directory):
-        common.pdsh(self.nodes, 'killall -SIGINT -f collectl').communicate()
+        #common.pdsh(self.nodes, 'killall -SIGINT -f collectl').communicate()
+        common.pdsh(self.nodes, 'killall -9 collectl').communicate()
 
     @staticmethod
     def _get_default_nodes():

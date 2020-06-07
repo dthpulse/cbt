@@ -1,0 +1,62 @@
+cluster:
+  user: 'cbt'
+  head: "apollo.qa.suse.cz"
+  clients: ["callisto.qa.suse.cz"]
+  osds: ["ares.qa.suse.cz", "artemis.qa.suse.cz", "hera.qa.suse.cz", "demeter.qa.suse.cz"]
+  mons:
+    apollo.qa.suse.cz:
+      a: "10.100.96.48:6789"
+    ares.qa.suse.cz:
+      b: "10.100.96.52:6789"
+    artemis.qa.suse.cz:
+      c: "10.100.96.53:6789"
+    hera.qa.suse.cz:
+      d: "10.100.96.55:6789"
+    demeter.qa.suse.cz:
+      e: "10.100.96.54:6789"
+  osds_per_node: 5 
+  fs: 'xfs'
+  mkfs_opts: '-f -i size=2048'
+  mount_opts: '-o inode64,noatime'
+  conf_file: '/etc/ceph/ceph.conf'
+  iterations: 1
+  use_existing: True
+  clusterid: "ceph"
+  tmp_dir: "/tmp/cbt"
+  ceph-osd_cmd: "sudo cephadm shell ceph-osd"
+  ceph-mon_cmd: "sudo cephadm shell ceph-mon"
+  ceph-run_cmd: "sudo cephadm shell ceph-run"
+  rados_cmd: "sudo /usr/bin/rados"
+  ceph_cmd: "sudo /usr/bin/ceph"
+  rbd_cmd: "sudo /usr/bin/rbd"
+  ceph_fsid: "e340c3c4-a71f-11ea-8bc2-0cc47a7ce2c8"
+
+  pool_profiles:
+    rbd:
+      pg_size: 1024
+      pgp_size: 1024
+      replication: 3
+
+benchmarks:
+  librbdfio:
+    time: 300 
+    vol_size: 32768 
+    mode: ['read', 'write', 'randread', 'randwrite', 'rw', 'randrw']
+    rwmixread: 50
+    op_size: [4194304, 2097152, 1048576, 524288, 262144, 131072, 65536, 32768, 16384, 8192, 4096]
+    procs_per_volume: [1]
+    volumes_per_client: [2]
+    iodepth: [32]
+    osd_ra: [512, 4096]
+    cmd_path: '/usr/bin/fio'
+    pool_profile: 'rbd'
+    log_avg_msec: 100
+    # Optionally disable fine-grained logging by fio
+    log_iops: False
+    log_bw: False
+    log_lat: False
+    # Optionally, set the rbd and pool names
+    poolname: 'rbd'
+    rbdname: 'img01'
+    # use_existing_volumes needs to be true to set the pool and rbd names
+    use_existing_volumes: False
