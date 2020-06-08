@@ -29,7 +29,6 @@ cluster:
   rados_cmd: "sudo /usr/bin/rados"
   ceph_cmd: "sudo /usr/bin/ceph"
   rbd_cmd: "sudo /usr/bin/rbd"
-  ceph_fsid: "e340c3c4-a71f-11ea-8bc2-0cc47a7ce2c8"
 
   pool_profiles:
     rbd:
@@ -41,13 +40,13 @@ benchmarks:
   librbdfio:
     time: 300 
     vol_size: 32768 
-    mode: ['read', 'write', 'randread', 'randwrite', 'rw', 'randrw']
+    mode: ['read', 'write', 'randread', 'randwrite']
     rwmixread: 50
-    op_size: [4194304, 2097152, 1048576, 524288, 262144, 131072, 65536, 32768, 16384, 8192, 4096]
-    procs_per_volume: [1]
-    volumes_per_client: [2]
-    iodepth: [32]
-    osd_ra: [512, 4096]
+    op_size: [1048576, 65536, 32768, 4096]
+    procs_per_volume: [512]
+    volumes_per_client: [1]
+    iodepth: [1024]
+    osd_ra: [512, 1024, 4096, 8192, 16384]
     cmd_path: '/usr/bin/fio'
     pool_profile: 'rbd'
     log_avg_msec: 100
