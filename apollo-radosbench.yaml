@@ -15,7 +15,7 @@ cluster:
   rados_cmd: "sudo /usr/bin/rados"
   ceph_cmd: "sudo /usr/bin/ceph"
   rbd_cmd: "sudo /usr/bin/rbd"
-  ceph_fsid: "e340c3c4-a71f-11ea-8bc2-0cc47a7ce2c8"
+  ceph_fsid: "d232a28a-aa32-11ea-8948-0cc47a7ce2c8"
   pool_profiles:
     replicated:
       pg_size: 1024
