@@ -236,9 +236,14 @@ class Radosbench(Benchmark):
                             if "Total time run" in line:
                                 found = 1
                         if found == 1:
-                            line = line.strip()
-                            key, val = line.split(":")
-                            result[key.strip()] = val.strip()
+                            key, val = (_.strip() for _ in line.split(":"))
+                            try:
+                                if any(_ in key for _ in ['size']):
+                                    result[key] = int(val)
+                                else:
+                                    result[key] = float(val)
+                            except:
+                                raise Exception("Conversion error for line: %s" % line)
                 with open(json_out_file, 'w') as json_fd:
                     json.dump(result, json_fd)
 
@@ -260,6 +265,7 @@ class RadosBenchAnalyzer(DataAnalyzer):
     def get_total_ops(self):
         search_key = "made" # looking for either 'Total writes made' or 'Total reads made'
         res = [val for key, val in self.radosbench_json_output.items() if search_key in key]
+        res.replace('"', '')
         return res[0]
 
     def get_cpu_cycles(self):
@@ -274,11 +280,13 @@ class RadosBenchAnalyzer(DataAnalyzer):
     def get_latency_avg(self):
         search_key = "Average Latency" 
         res = [val for key, val in self.radosbench_json_output.items() if search_key in key]
+        res.replace('"', '')
         return res[0]
 
     def get_bandwidth(self):
         search_key = "Bandwidth" 
         res = [val for key, val in self.radosbench_json_output.items() if search_key in key]
+        res.replace('"', '')
         return res[0]
 
     def get_iops_avg(self):
